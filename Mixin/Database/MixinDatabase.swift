@@ -12,15 +12,23 @@ class MixinDatabase: BaseDatabase {
         set { }
     }
 
+    override init() {
+        super.init()
+        database.setTokenizes(.WCDB)
+    }
+
     func initDatabase(clearSentSenderKey: Bool = false) {
         _database = Database(withPath: MixinFile.databaseURL.path)
+        database.setTokenizes(.WCDB)
         do {
+            try database.create(virtualTable: MessageFTS.tableName, of: MessageFTS.self)
             try database.run(transaction: {
                 var currentVersion = try database.getDatabaseVersion()
                 if currentVersion == 0 {
                     currentVersion = DatabaseUserDefault.shared.mixinDatabaseVersion
                 }
                 try self.createBefore(database: database, currentVersion: currentVersion)
+                try self.prepareFTS(database: database, currentVersion: currentVersion)
 
                 try database.create(of: Asset.self)
                 try database.create(table: Asset.topAssetsTableName, of: Asset.self)
@@ -56,6 +64,14 @@ class MixinDatabase: BaseDatabase {
             UIApplication.traceWCDBError(err)
         } catch {
             UIApplication.traceError(error)
+        }
+    }
+
+    private func prepareFTS(database: Database, currentVersion: Int) throws {
+        if currentVersion == 0 {
+            DatabaseUserDefault.shared.initiatedFTS = true
+        } else if !(try database.isTableExists(Message.tableName)) {
+            DatabaseUserDefault.shared.initiatedFTS = true
         }
     }
 

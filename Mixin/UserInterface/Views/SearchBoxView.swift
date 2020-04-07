@@ -46,10 +46,9 @@ class SearchBoxView: UIView, XibDesignable {
         textField.leftView = textFieldLeftView
         textField.leftViewMode = .always
         clearButton.addTarget(self, action: #selector(clear(_:)), for: .touchUpInside)
-        let clearImage = UIImage(named: "Wallet/ic_clear")
         clearButton.alpha = 0
         clearButton.imageView?.contentMode = .center
-        clearButton.setImage(clearImage, for: .normal)
+        clearButton.setImage(R.image.ic_clear(), for: .normal)
         textField.rightView = clearButton
         textField.rightViewMode = .whileEditing
         clearButton.frame = textField.rightViewRect(forBounds: textField.bounds)

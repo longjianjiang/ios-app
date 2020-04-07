@@ -143,7 +143,7 @@
 		7B51DDB8223A50D5008ACDBB /* VerificationCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B51DDB6223A50D5008ACDBB /* VerificationCodeViewController.swift */; };
 		7B51DDB9223A50D5008ACDBB /* VerificationCodeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B51DDB7223A50D5008ACDBB /* VerificationCodeView.xib */; };
 		7B51DDBB223A52A0008ACDBB /* LoginVerificationCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B51DDBA223A52A0008ACDBB /* LoginVerificationCodeViewController.swift */; };
-		7B5281742265D7E30023616D /* RecentAppsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5281732265D7E30023616D /* RecentAppsViewController.swift */; };
+		7B5281742265D7E30023616D /* RecentSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5281732265D7E30023616D /* RecentSearchViewController.swift */; };
 		7B5281762265F1730023616D /* AppCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B5281752265F1730023616D /* AppCell.swift */; };
 		7B54F95022B22E2900908A9D /* VerifyPinView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B54F94F22B22E2900908A9D /* VerifyPinView.xib */; };
 		7B54F95222B22EA600908A9D /* ChangeNumberVerifyPinViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B54F95122B22EA600908A9D /* ChangeNumberVerifyPinViewController.swift */; };
@@ -921,7 +921,7 @@
 		7B51DDB6223A50D5008ACDBB /* VerificationCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerificationCodeViewController.swift; sourceTree = "<group>"; };
 		7B51DDB7223A50D5008ACDBB /* VerificationCodeView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VerificationCodeView.xib; sourceTree = "<group>"; };
 		7B51DDBA223A52A0008ACDBB /* LoginVerificationCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVerificationCodeViewController.swift; sourceTree = "<group>"; };
-		7B5281732265D7E30023616D /* RecentAppsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentAppsViewController.swift; sourceTree = "<group>"; };
+		7B5281732265D7E30023616D /* RecentSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchViewController.swift; sourceTree = "<group>"; };
 		7B5281752265F1730023616D /* AppCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCell.swift; sourceTree = "<group>"; };
 		7B54F94F22B22E2900908A9D /* VerifyPinView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VerifyPinView.xib; sourceTree = "<group>"; };
 		7B54F95122B22EA600908A9D /* ChangeNumberVerifyPinViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeNumberVerifyPinViewController.swift; sourceTree = "<group>"; };
@@ -2378,7 +2378,7 @@
 				7B59534422670A5800D59DB4 /* SearchNavigationViewController.swift */,
 				7BA9D9ED226F114700255943 /* HomeSearchViewController.swift */,
 				7BDEE5C61FA72EB9004CB189 /* SearchViewController.swift */,
-				7B5281732265D7E30023616D /* RecentAppsViewController.swift */,
+				7B5281732265D7E30023616D /* RecentSearchViewController.swift */,
 				7BA9D9BB226D8BF700255943 /* SearchCategoryViewController.swift */,
 				7BA9D9C3226DCFFC00255943 /* SearchConversationViewController.swift */,
 				DF1A2C5F219BCACB004EFD68 /* ClockSkewViewController.swift */,
@@ -3888,7 +3888,7 @@
 				DF1F277C21A53585009A74C6 /* BackupViewController.swift in Sources */,
 				ABCB87DD23F18A3D00780E60 /* PermissionsViewController.swift in Sources */,
 				DF754CB81FBC7F1200F2F2E5 /* WalletPasswordViewController.swift in Sources */,
-				7B5281742265D7E30023616D /* RecentAppsViewController.swift in Sources */,
+				7B5281742265D7E30023616D /* RecentSearchViewController.swift in Sources */,
 				7BA41940209AFBCD00DFCD39 /* AppCardMessageViewModel.swift in Sources */,
 				7BEFDC1D1FB07F1600F66885 /* GroupNameCell.swift in Sources */,
 				7B9C64312241EDC600465A6A /* ConversationInputAccessible.swift in Sources */,

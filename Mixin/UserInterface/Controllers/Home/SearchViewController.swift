@@ -7,7 +7,7 @@ import MixinServices
 class SearchViewController: UIViewController, HomeSearchViewController {
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var recentAppsContainerView: UIView!
+    @IBOutlet weak var recentSearchContainerView: UIView!
     
     let cancelButton = SearchCancelButton()
     
@@ -30,7 +30,7 @@ class SearchViewController: UIViewController, HomeSearchViewController {
     private var conversationsByName = [SearchResult]()
     private var conversationsByMessage = [SearchResult]()
     private var lastKeyword: String?
-    private var recentAppsViewController: RecentAppsViewController?
+    private var recentSearchViewController: RecentSearchViewController?
     private var searchNumberRequest: Request?
     private var lastSearchFieldText: String?
     private var statement: CoreStatement?
@@ -46,8 +46,8 @@ class SearchViewController: UIViewController, HomeSearchViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
-        if let vc = segue.destination as? RecentAppsViewController {
-            recentAppsViewController = vc
+        if let vc = segue.destination as? RecentSearchViewController {
+            recentSearchViewController = vc
         }
     }
     
@@ -97,7 +97,7 @@ class SearchViewController: UIViewController, HomeSearchViewController {
     
     @IBAction func searchAction(_ sender: Any) {
         guard let keyword = trimmedLowercaseKeyword else {
-            showRecentApps()
+            showRecentSearch()
             lastKeyword = nil
             cancelOperation()
             navigationSearchBoxView.isBusy = false
@@ -171,7 +171,7 @@ class SearchViewController: UIViewController, HomeSearchViewController {
     
     func prepareForReuse() {
         cancelOperation()
-        showRecentApps()
+        showRecentSearch()
         assets = []
         users = []
         conversationsByName = []
@@ -415,13 +415,13 @@ extension SearchViewController {
     
     private func showSearchResults() {
         tableView.isHidden = false
-        recentAppsContainerView.isHidden = true
+        recentSearchContainerView.isHidden = true
     }
     
-    private func showRecentApps() {
+    private func showRecentSearch() {
         tableView.isHidden = true
-        recentAppsViewController?.reloadIfNeeded()
-        recentAppsContainerView.isHidden = false
+        recentSearchViewController?.reloadIfNeeded()
+        recentSearchContainerView.isHidden = false
     }
     
     private func models(forSection section: Section) -> [Any] {

@@ -1,7 +1,7 @@
 import UIKit
 import MixinServices
 
-class RecentAppsViewController: UIViewController {
+class RecentSearchViewController: UIViewController {
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var contentView: UIView!
@@ -109,7 +109,7 @@ class RecentAppsViewController: UIViewController {
     
 }
 
-extension RecentAppsViewController: UIGestureRecognizerDelegate {
+extension RecentSearchViewController: UIGestureRecognizerDelegate {
     
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let location = gestureRecognizer.location(in: scrollView)
@@ -118,7 +118,7 @@ extension RecentAppsViewController: UIGestureRecognizerDelegate {
     
 }
 
-extension RecentAppsViewController: UIScrollViewDelegate {
+extension RecentSearchViewController: UIScrollViewDelegate {
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         guard scrollView == self.scrollView else {
@@ -131,7 +131,7 @@ extension RecentAppsViewController: UIScrollViewDelegate {
     
 }
 
-extension RecentAppsViewController: UICollectionViewDataSource {
+extension RecentSearchViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return users.count
@@ -145,7 +145,7 @@ extension RecentAppsViewController: UICollectionViewDataSource {
     
 }
 
-extension RecentAppsViewController: UICollectionViewDelegate {
+extension RecentSearchViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let parent = parent as? SearchViewController else {

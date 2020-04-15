@@ -69,6 +69,8 @@
 "search_section_title_conversation_by_message" = "メッセージ";
 "search_result_prefix_id" = "Mixin ID：";
 "search_result_prefix_phone" = "電話番号：";
+"search_title_keyword" = "Recent Searches";
+"search_title_app" = "Recent Bots";
 
 // Toast
 "toast_server_error" = "サーバーはメンテナンス中です";

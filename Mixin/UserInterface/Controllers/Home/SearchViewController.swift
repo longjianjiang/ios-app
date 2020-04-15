@@ -144,6 +144,7 @@ class SearchViewController: UIViewController, HomeSearchViewController {
                 self.tableView.reloadData()
                 self.showSearchResults()
                 self.lastKeyword = keyword
+                AppGroupUserDefaults.User.insertRecentSearchKeyword(keyword)
             }
 
             let conversationsByMessage = ConversationDAO.shared.getConversation(withMessageLike: keyword, limit: limit, callback: { (statement) in

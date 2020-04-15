@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="recent_keyword" id="knJ-gc-ffV" customClass="RecentKeywordCell" customModule="Mixin" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="60" height="43"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="HHZ-ZM-5Uf">
+                <rect key="frame" x="0.0" y="0.0" width="60" height="43"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qtQ-8K-gII" customClass="InsetLabel" customModule="Mixin" customModuleProvider="target">
+                        <rect key="frame" x="5" y="5" width="50" height="28"/>
+                        <color key="backgroundColor" name="background_secondary"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" name="text"/>
+                        <nil key="highlightedColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="string" keyPath="dynamicTextSize" value="regular16"/>
+                        </userDefinedRuntimeAttributes>
+                    </label>
+                </subviews>
+                <color key="backgroundColor" name="background"/>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="qtQ-8K-gII" secondAttribute="trailing" constant="5" id="FVb-0I-Mlz"/>
+                    <constraint firstAttribute="bottom" secondItem="qtQ-8K-gII" secondAttribute="bottom" constant="10" id="Mca-A0-1mO"/>
+                    <constraint firstItem="qtQ-8K-gII" firstAttribute="leading" secondItem="HHZ-ZM-5Uf" secondAttribute="leading" constant="5" id="VNg-ED-kXf"/>
+                    <constraint firstItem="qtQ-8K-gII" firstAttribute="top" secondItem="HHZ-ZM-5Uf" secondAttribute="top" constant="5" id="lkI-OM-g9e"/>
+                </constraints>
+            </collectionViewCellContentView>
+            <color key="backgroundColor" name="background"/>
+            <size key="customSize" width="60" height="43"/>
+            <connections>
+                <outlet property="label" destination="qtQ-8K-gII" id="Il5-OS-Bng"/>
+                <outlet property="labelBottomConstraint" destination="Mca-A0-1mO" id="8Zi-qd-4Qw"/>
+                <outlet property="labelLeadingConstraint" destination="VNg-ED-kXf" id="lbn-dy-Crm"/>
+                <outlet property="labelTopConstraint" destination="lkI-OM-g9e" id="Vcq-j5-eRW"/>
+                <outlet property="labelTrailingConstraint" destination="FVb-0I-Mlz" id="dLt-hz-p9B"/>
+            </connections>
+            <point key="canvasLocation" x="139" y="154"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <namedColor name="background">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+        </namedColor>
+        <namedColor name="background_secondary">
+            <color red="0.96470588235294119" green="0.96862745098039216" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+        </namedColor>
+        <namedColor name="text">
+            <color red="0.20000000298023224" green="0.20000000298023224" blue="0.20000000298023224" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+        </namedColor>
+    </resources>
+</document>

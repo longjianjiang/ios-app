@@ -28,6 +28,7 @@ extension AppGroupUserDefaults {
             case reloadConversation = "reload_conversation"
             case hasUnreadAnnouncement = "has_unread_announcement"
             case recentlyUsedAppIds = "recently_used_app_ids"
+            case recentSearchKeywords = "recent_search_keyword"
             
             case autoUploadsContacts = "auto_uploads_contacts"
             case autoDownloadPhotos = "auto_download_photos"
@@ -48,6 +49,7 @@ extension AppGroupUserDefaults {
         public static let uninitializedVersion = -1
         
         public static let didChangeRecentlyUsedAppIdsNotification = Notification.Name(rawValue: "one.mixin.services.recently.used.app.ids.change")
+        public static let didChangeRecentSearchKeywordsNotification = Notification.Name(rawValue: "one.mixin.services.recent.search.keywords.change")
         public static let circleNameDidChangeNotification = Notification.Name(rawValue: "one.mixin.services.circle.name.change")
         public static let homeAppIdsDidChangeNotification = Notification.Name(rawValue: "one.mixin.services.home.app.ids.change")
         
@@ -112,6 +114,9 @@ extension AppGroupUserDefaults {
         @Default(namespace: .user, key: Key.recentlyUsedAppIds, defaultValue: [])
         public private(set) static var recentlyUsedAppIds: [String]
         
+        @Default(namespace: .user, key: Key.recentSearchKeywords, defaultValue: [])
+        public private(set) static var recentSearchKeywords: [String]
+        
         @Default(namespace: .user, key: Key.autoUploadsContacts, defaultValue: false)
         public static var autoUploadsContacts: Bool
         
@@ -160,6 +165,28 @@ extension AppGroupUserDefaults {
             }
             recentlyUsedAppIds = ids
             NotificationCenter.default.post(name: Self.didChangeRecentlyUsedAppIdsNotification, object: self)
+        }
+        
+        public static func removeAllRecentlyUsedAppId() {
+            recentlyUsedAppIds = []
+            NotificationCenter.default.post(name: Self.didChangeRecentlyUsedAppIdsNotification, object: self)
+        }
+        
+        public static func insertRecentSearchKeyword(_ keyword: String) {
+            let maxNumberOfIds = 12
+            var ids = recentSearchKeywords
+            ids.removeAll(where: { $0 == keyword })
+            ids.insert(keyword, at: 0)
+            if ids.count > maxNumberOfIds {
+                ids.removeLast(ids.count - maxNumberOfIds)
+            }
+            recentSearchKeywords = ids
+            NotificationCenter.default.post(name: Self.didChangeRecentSearchKeywordsNotification, object: self)
+        }
+        
+        public static func removeAllRecentSearchKeyword() {
+            recentSearchKeywords = []
+            NotificationCenter.default.post(name: Self.didChangeRecentSearchKeywordsNotification, object: self)
         }
         
         public static func updateLastUpdateOrInstallDateIfNeeded() {

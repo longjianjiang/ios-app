@@ -1,22 +1,27 @@
 import UIKit
 import MixinServices
+import AlignedCollectionViewFlowLayout
 
 class RecentSearchViewController: UIViewController {
     
-    @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var contentView: UIView!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var collectionLayout: UICollectionViewFlowLayout!
-    
-    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var collectionLayout: AlignedCollectionViewFlowLayout!
     
     private let cellCountPerRow = 4
     private let maxRowCount = 2
     private let cellMinWidth: CGFloat = 60
     private let queue = OperationQueue()
     
+    private lazy var templateKeywordCell = R.nib.recentKeywordCell(owner: nil)!
+    
     private var users = [UserItem]()
     private var needsReload = true
+    private var keywordItemSizes = [Int: CGSize]()
+    private var appItemSize = CGSize.zero
+    
+    private var recentSearchKeywords: [String] {
+        AppGroupUserDefaults.User.recentSearchKeywords
+    }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -25,17 +30,25 @@ class RecentSearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         queue.maxConcurrentOperationCount = 1
-        scrollView.delegate = self
+        collectionLayout.horizontalAlignment = .left
+        collectionView.register(R.nib.recentKeywordCell)
         collectionView.dataSource = self
         collectionView.delegate = self
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didChangeRecentlyUsedAppIds),
-                                               name: AppGroupUserDefaults.User.didChangeRecentlyUsedAppIdsNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(userDidChange(_:)),
-                                               name: .UserDidChange,
-                                               object: nil)
+        
+        let center = NotificationCenter.default
+        center.addObserver(self,
+                           selector: #selector(setNeedsReload),
+                           name: AppGroupUserDefaults.User.didChangeRecentlyUsedAppIdsNotification,
+                           object: nil)
+        center.addObserver(self,
+                           selector: #selector(setNeedsReload),
+                           name: AppGroupUserDefaults.User.didChangeRecentSearchKeywordsNotification,
+                           object: nil)
+        center.addObserver(self,
+                           selector: #selector(userDidChange(_:)),
+                           name: .UserDidChange,
+                           object: nil)
+        
         reloadIfNeeded()
     }
     
@@ -44,7 +57,7 @@ class RecentSearchViewController: UIViewController {
         let cellsWidth = cellMinWidth * CGFloat(cellCountPerRow)
         let totalSpacing = view.bounds.width - cellsWidth
         let spacing = floor(totalSpacing / CGFloat(cellCountPerRow + 1))
-        collectionLayout.itemSize = CGSize(width: cellMinWidth + spacing, height: 109)
+        appItemSize = CGSize(width: cellMinWidth + spacing, height: 109)
         collectionLayout.sectionInset = UIEdgeInsets(top: 0, left: spacing / 2, bottom: 0, right: spacing / 2)
     }
     
@@ -53,7 +66,7 @@ class RecentSearchViewController: UIViewController {
         (top as? HomeViewController)?.hideSearch()
     }
     
-    @objc func didChangeRecentlyUsedAppIds() {
+    @objc func setNeedsReload() {
         needsReload = true
     }
     
@@ -97,36 +110,9 @@ class RecentSearchViewController: UIViewController {
     
     private func reload(users: [UserItem]) {
         self.users = users
-        contentView.isHidden = users.isEmpty
-        if !users.isEmpty {
-            let lineCount = users.count > cellCountPerRow ? 2 : 1
-            let height = collectionLayout.itemSize.height * CGFloat(lineCount)
-            collectionViewHeightConstraint.constant = height
-            collectionView.reloadData()
-            view.layoutIfNeeded()
-        }
-    }
-    
-}
-
-extension RecentSearchViewController: UIGestureRecognizerDelegate {
-    
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        let location = gestureRecognizer.location(in: scrollView)
-        return !contentView.frame.contains(location)
-    }
-    
-}
-
-extension RecentSearchViewController: UIScrollViewDelegate {
-    
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard scrollView == self.scrollView else {
-            return
-        }
-        if scrollView.panGestureRecognizer.velocity(in: scrollView).y < 0 {
-            hideSearchAction()
-        }
+        self.keywordItemSizes = [:]
+        collectionView.reloadData()
+        collectionLayout.invalidateLayout()
     }
     
 }
@@ -134,13 +120,39 @@ extension RecentSearchViewController: UIScrollViewDelegate {
 extension RecentSearchViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return users.count
+        if section == 0 {
+            return recentSearchKeywords.count
+        } else {
+            return users.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: R.reuseIdentifier.recent_app, for: indexPath)!
-        cell.render(user: users[indexPath.row])
-        return cell
+        if indexPath.section == 0 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: R.reuseIdentifier.recent_keyword, for: indexPath)!
+            cell.label.text = recentSearchKeywords[indexPath.row]
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: R.reuseIdentifier.recent_app, for: indexPath)!
+            cell.render(user: users[indexPath.row])
+            return cell
+        }
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        2
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: R.reuseIdentifier.recent_search_header, for: indexPath)!
+        if indexPath.section == 0 {
+            view.label.text = R.string.localizable.search_title_keyword()
+        } else {
+            view.label.text = R.string.localizable.search_title_app()
+        }
+        view.indexPath = indexPath
+        view.delegate = self
+        return view
     }
     
 }
@@ -151,13 +163,74 @@ extension RecentSearchViewController: UICollectionViewDelegate {
         guard let parent = parent as? SearchViewController else {
             return
         }
-        let user = users[indexPath.row]
-        let vc = ConversationViewController.instance(ownerUser: user)
-        parent.searchTextField.resignFirstResponder()
-        parent.homeNavigationController?.pushViewController(vc, animated: true)
-        vc.transitionCoordinator?.animate(alongsideTransition: nil, completion: { (_) in
-            parent.homeViewController?.hideSearch()
-        })
+        if indexPath.section == 0 {
+            let keyword = recentSearchKeywords[indexPath.item]
+            parent.searchTextField.text = keyword
+            parent.searchAction(collectionView)
+        } else {
+            let user = users[indexPath.row]
+            let vc = ConversationViewController.instance(ownerUser: user)
+            parent.searchTextField.resignFirstResponder()
+            parent.homeNavigationController?.pushViewController(vc, animated: true)
+            vc.transitionCoordinator?.animate(alongsideTransition: nil, completion: { (_) in
+                parent.homeViewController?.hideSearch()
+            })
+        }
+    }
+    
+}
+
+extension RecentSearchViewController: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if indexPath.section == 0 {
+            if let size = keywordItemSizes[indexPath.row] {
+                return size
+            } else {
+                templateKeywordCell.label.text = recentSearchKeywords[indexPath.row]
+                let widthToFit = collectionView.bounds.width - collectionView.contentInset.horizontal
+                let sizeToFit = CGSize(width: widthToFit, height: UIView.layoutFittingExpandedSize.height)
+                let size = templateKeywordCell.sizeThatFits(sizeToFit)
+                keywordItemSizes[indexPath.row] = size
+                return size
+            }
+        } else {
+            return appItemSize
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        section == 0 ? 0 : 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let hasContent = (section == 1 && !users.isEmpty)
+            || (section == 0 && !recentSearchKeywords.isEmpty)
+        if hasContent {
+            if section == 0 {
+                return CGSize(width: collectionView.bounds.width, height: 37)
+            } else {
+                return CGSize(width: collectionView.bounds.width, height: 57)
+            }
+        } else {
+            return .zero
+        }
+    }
+    
+}
+
+extension RecentSearchViewController: RecentSearchHeaderViewDelegate {
+    
+    func recentSearchHeaderViewDidSelectClear(_ view: RecentSearchHeaderView) {
+        guard let section = view.indexPath?.section else {
+            return
+        }
+        if section == 0 {
+            AppGroupUserDefaults.User.removeAllRecentSearchKeyword()
+        } else {
+            AppGroupUserDefaults.User.removeAllRecentlyUsedAppId()
+        }
+        reloadIfNeeded()
     }
     
 }

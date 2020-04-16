@@ -108,7 +108,6 @@ class SearchViewController: UIViewController, HomeSearchViewController {
             navigationSearchBoxView.isBusy = false
             return
         }
-        let isKeywordMarked = searchTextField.markedTextRange != nil
         searchNumberRequest?.cancel()
         searchNumberRequest = nil
         let limit = self.resultLimit + 1 // Query 1 more object to see if there's more objects than the limit
@@ -145,9 +144,6 @@ class SearchViewController: UIViewController, HomeSearchViewController {
                 self.tableView.reloadData()
                 self.showSearchResults()
                 self.lastKeyword = keyword
-                if !isKeywordMarked {
-                    AppGroupUserDefaults.User.insertRecentSearchKeyword(keyword)
-                }
             }
 
             let conversationsByMessage = ConversationDAO.shared.getConversation(withMessageLike: keyword, limit: limit, callback: { (statement) in
@@ -320,6 +316,9 @@ extension SearchViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        if let keyword = lastKeyword {
+            AppGroupUserDefaults.User.insertRecentSearchKeyword(keyword)
+        }
         searchTextField.resignFirstResponder()
         switch Section(rawValue: indexPath.section)! {
         case .searchNumber:
@@ -342,6 +341,9 @@ extension SearchViewController: SearchHeaderViewDelegate {
     func searchHeaderViewDidSendMoreAction(_ view: SearchHeaderView) {
         guard let sectionValue = view.section, let section = Section(rawValue: sectionValue) else {
             return
+        }
+        if let keyword = lastKeyword {
+            AppGroupUserDefaults.User.insertRecentSearchKeyword(keyword)
         }
         let vc = R.storyboard.home.search_category()!
         switch section {

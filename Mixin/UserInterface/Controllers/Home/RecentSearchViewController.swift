@@ -35,6 +35,13 @@ class RecentSearchViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissIfTappingBelowCells(recognizer:)))
+        collectionView.addGestureRecognizer(tapRecognizer)
+        let swipeRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(hideSearchAction))
+        swipeRecognizer.direction = .up
+        swipeRecognizer.delegate = self
+        collectionView.addGestureRecognizer(swipeRecognizer)
+        
         let center = NotificationCenter.default
         center.addObserver(self,
                            selector: #selector(setNeedsReload),
@@ -81,6 +88,13 @@ class RecentSearchViewController: UIViewController {
         }
         if users.contains(where: { $0.userId == userId }) {
             needsReload = true
+        }
+    }
+    
+    @objc func dismissIfTappingBelowCells(recognizer: UITapGestureRecognizer) {
+        let location = recognizer.location(in: collectionView)
+        if location.y > collectionView.contentSize.height {
+            hideSearchAction()
         }
     }
     
@@ -231,6 +245,14 @@ extension RecentSearchViewController: RecentSearchHeaderViewDelegate {
             AppGroupUserDefaults.User.removeAllRecentlyUsedAppId()
         }
         reloadIfNeeded()
+    }
+    
+}
+
+extension RecentSearchViewController: UIGestureRecognizerDelegate {
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
     }
     
 }

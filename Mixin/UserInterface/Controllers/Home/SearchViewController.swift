@@ -108,6 +108,7 @@ class SearchViewController: UIViewController, HomeSearchViewController {
             navigationSearchBoxView.isBusy = false
             return
         }
+        let isKeywordMarked = searchTextField.markedTextRange != nil
         searchNumberRequest?.cancel()
         searchNumberRequest = nil
         let limit = self.resultLimit + 1 // Query 1 more object to see if there's more objects than the limit
@@ -144,7 +145,9 @@ class SearchViewController: UIViewController, HomeSearchViewController {
                 self.tableView.reloadData()
                 self.showSearchResults()
                 self.lastKeyword = keyword
-                AppGroupUserDefaults.User.insertRecentSearchKeyword(keyword)
+                if !isKeywordMarked {
+                    AppGroupUserDefaults.User.insertRecentSearchKeyword(keyword)
+                }
             }
 
             let conversationsByMessage = ConversationDAO.shared.getConversation(withMessageLike: keyword, limit: limit, callback: { (statement) in

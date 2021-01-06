@@ -23,7 +23,28 @@ public final class ParticipantSessionDAO: UserDatabaseDAO {
         """
         return db.select(with: sql, arguments: [conversationId, sessionId])
     }
-
+    
+    public func getParticipantSessionKeyWithoutSelf(conversationId: String, userId: String) -> ParticipantSession.Key? {
+        let sql = "SELECT * FROM participant_session WHERE conversation_id = ? AND user_id != ?"
+        return db.select(with: sql, arguments: [conversationId, userId])
+    }
+    
+    public func insertParticipantSessionSent(_ object: ParticipantSession.Sent) {
+        db.save(object.participantSession)
+    }
+    
+    public func updateParticipantSessionSent(_ objects: [ParticipantSession.Sent]) {
+        db.write { (db) in
+            for obj in objects {
+                let condition: SQLSpecificExpressible = obj.conversationId == ParticipantSession.column(of: .conversationId)
+                    && obj.userId == ParticipantSession.column(of: .userId)
+                    && obj.sessionId == ParticipantSession.column(of: .sessionId)
+                let assignments = [ParticipantSession.column(of: .sentToServer).set(to: obj.sentToServer)]
+                try ParticipantSession.filter(condition).updateAll(db, assignments)
+            }
+        }
+    }
+    
     public func provisionSession(userId: String, sessionId: String) {
         let sql = """
         INSERT OR REPLACE INTO participant_session(conversation_id, user_id, session_id, created_at)

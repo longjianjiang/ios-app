@@ -1,7 +1,7 @@
 import Foundation
 import CommonCrypto
 
-enum MessageCryptor {
+public enum MessageCryptor {
     
     enum Error: Swift.Error {
         case keyGeneration
@@ -14,7 +14,7 @@ enum MessageCryptor {
     private static let version = Data([0x01])
     private static let sessionSize = Data([0x01, 0x00])
     
-    static func encrypt(_ message: Data, with privateKey: Ed25519PrivateKey, remotePublicKey: Data, remoteSessionID: UUID) throws -> Data {
+    public static func encrypt(_ message: Data, with privateKey: Ed25519PrivateKey, remotePublicKey: Data, remoteSessionID: UUID) throws -> Data {
         guard let key = Data(withNumberOfSecuredRandomBytes: kCCKeySizeAES128) else {
             throw Error.keyGeneration
         }
@@ -41,7 +41,7 @@ enum MessageCryptor {
         return cipher
     }
     
-    static func decrypt(cipher: Data, with privateKey: Ed25519PrivateKey) throws -> Data {
+    public static func decrypt(cipher: Data, with privateKey: Ed25519PrivateKey) throws -> Data {
         guard cipher.count > 111 else {
             throw Error.badCipher
         }

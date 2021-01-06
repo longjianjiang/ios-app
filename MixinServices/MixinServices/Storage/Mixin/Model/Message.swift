@@ -253,6 +253,16 @@ public enum MessageCategory: String, Decodable {
     case KRAKEN_CANCEL
     case KRAKEN_DECLINE
     case KRAKEN_RESTART
+    case ENCRYPTED_TEXT
+    case ENCRYPTED_IMAGE
+    case ENCRYPTED_VIDEO
+    case ENCRYPTED_STICKER
+    case ENCRYPTED_DATA
+    case ENCRYPTED_CONTACT
+    case ENCRYPTED_AUDIO
+    case ENCRYPTED_LIVE
+    case ENCRYPTED_POST
+    case ENCRYPTED_LOCATION
     case EXT_UNREAD
     case EXT_ENCRYPTION
     case UNKNOWN

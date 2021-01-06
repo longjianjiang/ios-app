@@ -442,7 +442,11 @@ public final class ConversationDAO: UserDatabaseDAO {
             
             if let participantSessions = conversation.participantSessions, participantSessions.count > 0 {
                 let sessionParticipants = participantSessions.map {
-                    ParticipantSession(conversationId: conversationId, userId: $0.userId, sessionId: $0.sessionId, sentToServer: nil, createdAt: Date().toUTCString())
+                    ParticipantSession(conversationId: conversationId,
+                                       userId: $0.userId,
+                                       sessionId: $0.sessionId,
+                                       sentToServer: nil,
+                                       createdAt: Date().toUTCString())
                 }
                 try sessionParticipants.save(db)
             }

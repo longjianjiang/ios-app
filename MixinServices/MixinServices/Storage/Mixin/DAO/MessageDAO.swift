@@ -330,6 +330,12 @@ public final class MessageDAO: UserDatabaseDAO {
         }
     }
     
+    public func updateMessageCategory(_ category: String, forMessageWithId id: String) {
+        db.update(Message.self,
+                  assignments: [Message.column(of: .category).set(to: category)],
+                  where: Message.column(of: .messageId) == id)
+    }
+    
     public func getFullMessage(messageId: String) -> MessageItem? {
         db.select(with: MessageDAO.sqlQueryFullMessageById, arguments: [messageId])
     }

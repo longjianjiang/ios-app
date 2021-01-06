@@ -540,6 +540,21 @@ extension SendMessageService {
                     blazeMessage.params?.data = message.content
                 }
             }
+        } else if message.category.hasPrefix("ENCRYPTED_") {
+            try checkConversationExist(conversation: conversation)
+            var participantSessionKey = ParticipantSessionDAO.shared.getParticipantSessionKeyWithoutSelf(conversationId: message.conversationId, userId: myUserId)
+            if participantSessionKey == nil {
+                syncConversation(conversationId: message.conversationId)
+                participantSessionKey = ParticipantSessionDAO.shared.getParticipantSessionKeyWithoutSelf(conversationId: message.conversationId, userId: myUserId)
+            }
+            guard let contentData = (message.content ?? "").data(using: .utf8), let privateKey = RequestSigning.edDSAPrivateKey, let publicKeyBase64 = participantSessionKey?.publicKey, let publicKey = Data(base64Encoded: publicKeyBase64), let id = participantSessionKey?.sessionId, let sessionId = UUID(uuidString: id) else {
+                let newCategory = message.category.replacingOccurrences(of: "ENCRYPTED", with: "PLAIN")
+                MessageDAO.shared.updateMessageCategory(newCategory, forMessageWithId: message.messageId)
+                try sendMessage(blazeMessage: blazeMessage)
+                return
+            }
+            let content = try MessageCryptor.encrypt(contentData, with: privateKey, remotePublicKey: publicKey, remoteSessionID: sessionId)
+            blazeMessage.params?.data = content.base64EncodedString()
         } else {
             if !SignalProtocol.shared.isExistSenderKey(groupId: message.conversationId, senderId: message.userId) {
                 if conversation.isGroup() {

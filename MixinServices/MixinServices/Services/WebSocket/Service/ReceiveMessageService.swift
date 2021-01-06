@@ -213,6 +213,7 @@ public class ReceiveMessageService: MixinService {
             ReceiveMessageService.shared.processSystemMessage(data: data)
             ReceiveMessageService.shared.processPlainMessage(data: data)
             ReceiveMessageService.shared.processSignalMessage(data: data)
+            ReceiveMessageService.shared.processEncryptedMessage(data: data)
             ReceiveMessageService.shared.processAppButton(data: data)
             ReceiveMessageService.shared.processAppCard(data: data)
             ReceiveMessageService.shared.processCallMessage(data: data)
@@ -422,7 +423,23 @@ public class ReceiveMessageService: MixinService {
             }
         }
     }
-
+    
+    private func processEncryptedMessage(data: BlazeMessageData) {
+        guard data.category.hasPrefix("ENCRYPTED_") else {
+            return
+        }
+        guard let cipher = Data(base64Encoded: data.data), let pk = RequestSigning.edDSAPrivateKey else {
+            return
+        }
+        do {
+            let content = try MessageCryptor.decrypt(cipher: cipher, with: pk)
+            let text = String(data: content, encoding: .utf8) ?? ""
+            processDecryptSuccess(data: data, plainText: text)
+        } catch {
+            // TODO: Report
+        }
+    }
+    
     private func refreshKeys(conversationId: String) {
         let now = Date().timeIntervalSince1970
         guard now - (refreshRefreshOneTimePreKeys[conversationId] ?? 0) > 60 else {

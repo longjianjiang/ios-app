@@ -18,25 +18,25 @@ extension SendMessageService {
         }
 
         if msg.category.hasSuffix("_TEXT") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_TEXT.rawValue :  MessageCategory.PLAIN_TEXT.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_TEXT.rawValue : MessageCategory.ENCRYPTED_TEXT.rawValue
         } else if msg.category.hasSuffix("_IMAGE") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_IMAGE.rawValue :  MessageCategory.PLAIN_IMAGE.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_IMAGE.rawValue : MessageCategory.ENCRYPTED_IMAGE.rawValue
         } else if msg.category.hasSuffix("_VIDEO") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_VIDEO.rawValue :  MessageCategory.PLAIN_VIDEO.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_VIDEO.rawValue : MessageCategory.ENCRYPTED_VIDEO.rawValue
         } else if msg.category.hasSuffix("_DATA") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_DATA.rawValue :  MessageCategory.PLAIN_DATA.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_DATA.rawValue : MessageCategory.ENCRYPTED_DATA.rawValue
         } else if msg.category.hasSuffix("_STICKER") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_STICKER.rawValue :  MessageCategory.PLAIN_STICKER.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_STICKER.rawValue : MessageCategory.ENCRYPTED_STICKER.rawValue
         } else if msg.category.hasSuffix("_CONTACT") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_CONTACT.rawValue :  MessageCategory.PLAIN_CONTACT.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_CONTACT.rawValue : MessageCategory.ENCRYPTED_CONTACT.rawValue
         } else if msg.category.hasSuffix("_AUDIO") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_AUDIO.rawValue :  MessageCategory.PLAIN_AUDIO.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_AUDIO.rawValue : MessageCategory.ENCRYPTED_AUDIO.rawValue
         } else if msg.category.hasSuffix("_LIVE") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_LIVE.rawValue :  MessageCategory.PLAIN_LIVE.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_LIVE.rawValue : MessageCategory.ENCRYPTED_LIVE.rawValue
         } else if msg.category.hasSuffix("_POST") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_POST.rawValue :  MessageCategory.PLAIN_POST.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_POST.rawValue : MessageCategory.ENCRYPTED_POST.rawValue
         } else if msg.category.hasSuffix("_LOCATION") {
-            msg.category = isSignalMessage ? MessageCategory.SIGNAL_LOCATION.rawValue :  MessageCategory.PLAIN_LOCATION.rawValue
+            msg.category = isSignalMessage ? MessageCategory.SIGNAL_LOCATION.rawValue : MessageCategory.ENCRYPTED_LOCATION.rawValue
         }
 
         jobCreationQueue.async {

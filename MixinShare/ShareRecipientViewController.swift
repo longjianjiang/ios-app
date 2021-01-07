@@ -345,7 +345,7 @@ extension ShareRecipientViewController {
     }
 
     private func shareTextMessage(content: String, conversation: RecipientSearchItem) {
-        let category: MessageCategory = conversation.isSignalConversation ? .SIGNAL_TEXT : .PLAIN_TEXT
+        let category: MessageCategory = conversation.isSignalConversation ? .SIGNAL_TEXT : .ENCRYPTED_TEXT
         var message = Message.createMessage(category: category.rawValue, conversationId: conversation.conversationId, userId: myUserId)
         message.content = content
         sendMessage(message: message, conversation: conversation)
@@ -355,14 +355,14 @@ extension ShareRecipientViewController {
         guard let data = try? Data(contentsOf: url), let content = String(data: data, encoding: .utf8) else {
             return
         }
-        let category: MessageCategory = conversation.isSignalConversation ? .SIGNAL_POST : .PLAIN_POST
+        let category: MessageCategory = conversation.isSignalConversation ? .SIGNAL_POST : .ENCRYPTED_POST
         var message = Message.createMessage(category: category.rawValue, conversationId: conversation.conversationId, userId: myUserId)
         message.content = "```\n\(content)\n```"
         sendMessage(message: message, conversation: conversation)
     }
 
     private func sharePhotoMessage(imageData: Data, conversation: RecipientSearchItem, typeIdentifier: CFString) {
-        let category: MessageCategory = conversation.isSignalConversation ? .SIGNAL_IMAGE : .PLAIN_IMAGE
+        let category: MessageCategory = conversation.isSignalConversation ? .SIGNAL_IMAGE : .ENCRYPTED_IMAGE
         var message = Message.createMessage(category: category.rawValue, conversationId: conversation.conversationId, userId: myUserId)
         let extensionName: String
 

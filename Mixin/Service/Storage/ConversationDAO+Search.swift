@@ -23,7 +23,7 @@ extension ConversationDAO {
             arguments = ["keyword": keyword]
         } else {
             sql += """
-                WHERE m.category in ('SIGNAL_TEXT','SIGNAL_DATA','SIGNAL_POST','PLAIN_TEXT','PLAIN_DATA','PLAIN_POST')
+                WHERE m.category in ('SIGNAL_TEXT','SIGNAL_DATA','SIGNAL_POST','PLAIN_TEXT','PLAIN_DATA','PLAIN_POST','ENCRYPTED_TEXT','ENCRYPTED_DATA','ENCRYPTED_POST')
                     AND m.status != 'FAILED'
                     AND (m.content LIKE :keyword ESCAPE '/' OR m.name LIKE :keyword ESCAPE '/')
             """

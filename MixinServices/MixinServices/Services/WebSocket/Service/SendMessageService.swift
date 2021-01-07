@@ -543,13 +543,14 @@ extension SendMessageService {
         } else if message.category.hasPrefix("ENCRYPTED_") {
             try checkConversationExist(conversation: conversation)
             var participantSessionKey = ParticipantSessionDAO.shared.getParticipantSessionKeyWithoutSelf(conversationId: message.conversationId, userId: myUserId)
-            if participantSessionKey == nil {
+            if participantSessionKey?.publicKey == nil {
                 syncConversation(conversationId: message.conversationId)
                 participantSessionKey = ParticipantSessionDAO.shared.getParticipantSessionKeyWithoutSelf(conversationId: message.conversationId, userId: myUserId)
             }
-            guard let contentData = (message.content ?? "").data(using: .utf8), let privateKey = RequestSigning.edDSAPrivateKey, let publicKeyBase64 = participantSessionKey?.publicKey, let publicKey = Data(base64Encoded: publicKeyBase64), let id = participantSessionKey?.sessionId, let sessionId = UUID(uuidString: id) else {
-                let newCategory = message.category.replacingOccurrences(of: "ENCRYPTED", with: "PLAIN")
+            guard let contentData = (message.content ?? "").data(using: .utf8), let privateKey = RequestSigning.edDSAPrivateKey, let publicKeyBase64 = participantSessionKey?.publicKey, let publicKey = Data(base64URLEncoded: publicKeyBase64), let sid = participantSessionKey?.sessionId, let sessionId = UUID(uuidString: sid) else {
+                let newCategory = message.category.replacingOccurrences(of: "ENCRYPTED_", with: "PLAIN_")
                 MessageDAO.shared.updateMessageCategory(newCategory, forMessageWithId: message.messageId)
+                blazeMessage.params?.data = nil
                 try sendMessage(blazeMessage: blazeMessage)
                 return
             }

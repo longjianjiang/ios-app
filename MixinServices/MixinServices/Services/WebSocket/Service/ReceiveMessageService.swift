@@ -238,7 +238,8 @@ public class ReceiveMessageService: MixinService {
                                              userId: data.userId,
                                              sessionId: data.sessionId,
                                              sentToServer: nil,
-                                             createdAt: Date().toUTCString())
+                                             createdAt: Date().toUTCString(),
+                                             publicKey: nil) // FIXME: Is this OK?
             UserDatabase.current.save(session)
         }
     }

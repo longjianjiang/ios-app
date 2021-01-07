@@ -30,10 +30,12 @@ public final class ParticipantSessionDAO: UserDatabaseDAO {
     }
     
     public func insertParticipantSessionSent(_ object: ParticipantSession.Sent) {
+        // FIXME: Is this correct? Will insert do the job?
         db.save(object.participantSession)
     }
     
     public func updateParticipantSessionSent(_ objects: [ParticipantSession.Sent]) {
+        // FIXME: Is this correct? What if there's no record existed?
         db.write { (db) in
             for obj in objects {
                 let condition: SQLSpecificExpressible = obj.conversationId == ParticipantSession.column(of: .conversationId)
@@ -102,7 +104,8 @@ public final class ParticipantSessionDAO: UserDatabaseDAO {
                                    userId: $0.userId,
                                    sessionId: $0.sessionId,
                                    sentToServer: sentToServerMap[$0.uniqueIdentifier] ?? nil,
-                                   createdAt: Date().toUTCString())
+                                   createdAt: Date().toUTCString(),
+                                   publicKey: $0.publicKey)
             }
             try sessionParticipants.save(db)
         }

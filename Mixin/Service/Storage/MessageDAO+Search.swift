@@ -19,7 +19,7 @@ extension MessageDAO {
         } else {
             sql += """
                 WHERE conversation_id = :conv_id
-                    AND m.category in ('SIGNAL_TEXT','SIGNAL_DATA','SIGNAL_POST','PLAIN_TEXT','PLAIN_DATA','PLAIN_POST')
+                    AND m.category in ('SIGNAL_TEXT','SIGNAL_DATA','SIGNAL_POST','PLAIN_TEXT','PLAIN_DATA','PLAIN_POST','ENCRYPTED_TEXT','ENCRYPTED_DATA','ENCRYPTED_POST')
                     AND m.status != 'FAILED'
                     AND (m.content LIKE :keyword ESCAPE '/' OR m.name LIKE :keyword ESCAPE '/')
             """

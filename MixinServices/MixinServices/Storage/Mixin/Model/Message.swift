@@ -305,11 +305,10 @@ public enum MessageCategory: String, Decodable {
         return Set(categories.map(\.rawValue))
     }()
     
-    // ⚠️ Database table creation depends on this, look after database when modifying
     public static let ftsAvailable: Set<Self> = [
-        .SIGNAL_TEXT, .PLAIN_TEXT,
-        .SIGNAL_POST, .PLAIN_POST,
-        .SIGNAL_DATA, .PLAIN_DATA
+        .SIGNAL_TEXT, .PLAIN_TEXT, .ENCRYPTED_TEXT,
+        .SIGNAL_POST, .PLAIN_POST, .ENCRYPTED_POST,
+        .SIGNAL_DATA, .PLAIN_DATA, .ENCRYPTED_DATA
     ]
     
     public static let ftsAvailableCategoryStrings: Set<String> = Set(ftsAvailable.map(\.rawValue))

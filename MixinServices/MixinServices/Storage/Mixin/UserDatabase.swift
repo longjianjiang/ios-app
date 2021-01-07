@@ -340,7 +340,11 @@ public final class UserDatabase: Database {
         }
         
         migrator.registerMigration("v22") { (db) in
-            try db.execute(sql: "ALTER TABLE participant_session ADD COLUMN public_key TEXT")
+            let infos = try TableInfo.fetchAll(db, sql: "PRAGMA table_info(participant_session)")
+            let columnNames = infos.map(\.name)
+            if !columnNames.contains("public_key") {
+                try db.execute(sql: "ALTER TABLE participant_session ADD COLUMN public_key TEXT")
+            }
         }
         
         return migrator

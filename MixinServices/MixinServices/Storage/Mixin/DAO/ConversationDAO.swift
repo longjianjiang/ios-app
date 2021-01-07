@@ -446,7 +446,8 @@ public final class ConversationDAO: UserDatabaseDAO {
                                        userId: $0.userId,
                                        sessionId: $0.sessionId,
                                        sentToServer: nil,
-                                       createdAt: Date().toUTCString())
+                                       createdAt: Date().toUTCString(),
+                                       publicKey: $0.publicKey)
                 }
                 try sessionParticipants.save(db)
             }

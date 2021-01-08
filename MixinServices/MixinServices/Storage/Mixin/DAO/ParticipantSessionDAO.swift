@@ -35,7 +35,6 @@ public final class ParticipantSessionDAO: UserDatabaseDAO {
     }
     
     public func updateParticipantSessionSent(_ objects: [ParticipantSession.Sent]) {
-        // FIXME: Is this correct? What if there's no record existed?
         db.write { (db) in
             for obj in objects {
                 let condition: SQLSpecificExpressible = obj.conversationId == ParticipantSession.column(of: .conversationId)

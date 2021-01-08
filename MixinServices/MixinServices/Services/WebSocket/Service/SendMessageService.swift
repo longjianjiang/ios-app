@@ -543,7 +543,7 @@ extension SendMessageService {
         } else if message.category.hasPrefix("ENCRYPTED_") {
             try checkConversationExist(conversation: conversation)
             var participantSessionKey = ParticipantSessionDAO.shared.getParticipantSessionKeyWithoutSelf(conversationId: message.conversationId, userId: myUserId)
-            if participantSessionKey?.publicKey == nil {
+            if participantSessionKey == nil {
                 syncConversation(conversationId: message.conversationId)
                 participantSessionKey = ParticipantSessionDAO.shared.getParticipantSessionKeyWithoutSelf(conversationId: message.conversationId, userId: myUserId)
             }

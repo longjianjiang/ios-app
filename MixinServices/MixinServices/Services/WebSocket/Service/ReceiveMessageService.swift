@@ -239,7 +239,7 @@ public class ReceiveMessageService: MixinService {
                                              sessionId: data.sessionId,
                                              sentToServer: nil,
                                              createdAt: Date().toUTCString(),
-                                             publicKey: nil) // FIXME: Is this OK?
+                                             publicKey: nil)
             UserDatabase.current.save(session)
         }
     }
@@ -435,9 +435,11 @@ public class ReceiveMessageService: MixinService {
         do {
             let content = try MessageCryptor.decrypt(cipher: cipher, with: pk)
             let text = String(data: content, encoding: .utf8) ?? ""
+            _ = syncUser(userId: data.getSenderId())
             processDecryptSuccess(data: data, plainText: text)
+            updateRemoteMessageStatus(messageId: data.messageId, status: .DELIVERED)
         } catch {
-            // TODO: Report
+            reporter.report(error: error)
         }
     }
     

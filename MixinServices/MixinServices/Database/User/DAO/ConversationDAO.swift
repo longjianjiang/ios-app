@@ -167,7 +167,7 @@ public final class ConversationDAO: UserDatabaseDAO {
             try Participant
                 .filter(Participant.column(of: .conversationId) == conversationId)
                 .deleteAll(db)
-            try deleteFTSContent(with: conversationId, from: db)
+            try MessageFTSDAO.shared.deleteAllMessages(with: conversationId)
             db.afterNextTransactionCommit { (_) in
                 NotificationCenter.default.post(onMainThread: ParticipantDAO.participantDidChangeNotification,
                                                 object: self,
@@ -198,7 +198,7 @@ public final class ConversationDAO: UserDatabaseDAO {
             try ParticipantSession
                 .filter(ParticipantSession.column(of: .conversationId) == conversationId)
                 .deleteAll(db)
-            try deleteFTSContent(with: conversationId, from: db)
+            try MessageFTSDAO.shared.deleteAllMessages(with: conversationId)
             db.afterNextTransactionCommit { (_) in
                 ConcurrentJobQueue.shared.addJob(job: AttachmentCleanUpJob(conversationId: conversationId, mediaUrls: mediaUrls))
                 NotificationCenter.default.post(onMainThread: conversationDidChangeNotification, object: nil)
@@ -219,7 +219,7 @@ public final class ConversationDAO: UserDatabaseDAO {
             try Conversation
                 .filter(Conversation.column(of: .conversationId) == conversationId)
                 .updateAll(db, [Conversation.column(of: .unseenMessageCount).set(to: 0)])
-            try deleteFTSContent(with: conversationId, from: db)
+            try MessageFTSDAO.shared.deleteAllMessages(with: conversationId)
             db.afterNextTransactionCommit { (_) in
                 ConcurrentJobQueue.shared.addJob(job: AttachmentCleanUpJob(conversationId: conversationId, mediaUrls: mediaUrls))
                 let change = ConversationChange(conversationId: conversationId, action: .reload)
@@ -522,15 +522,6 @@ public final class ConversationDAO: UserDatabaseDAO {
     
     public func makeConversationId(userId: String, ownerUserId: String) -> String {
         return (min(userId, ownerUserId) + max(userId, ownerUserId)).toUUID()
-    }
-    
-}
-
-extension ConversationDAO {
-    
-    private func deleteFTSContent(with conversationId: String, from db: GRDB.Database) throws {
-        let sql = "DELETE FROM \(Message.ftsTableName) WHERE conversation_id = ?"
-        try db.execute(sql: sql, arguments: [conversationId])
     }
     
 }

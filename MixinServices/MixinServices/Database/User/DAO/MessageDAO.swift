@@ -505,8 +505,10 @@ public final class MessageDAO: UserDatabaseDAO {
             && message.status != MessageStatus.FAILED.rawValue
             && MessageCategory.ftsAvailableCategoryStrings.contains(message.category)
         if shouldInsertIntoFTSTable {
-            try database.execute(sql: "INSERT INTO \(Message.ftsTableName) VALUES (?, ?, ?, ?)",
-                                 arguments: [message.messageId, message.conversationId, message.content, message.name])
+            MessageFTSDAO.shared.insert(id: message.messageId,
+                                        conversationId: message.conversationId,
+                                        content: message.content,
+                                        name: message.name)
         }
         try MessageDAO.shared.updateUnseenMessageCount(database: database, conversationId: message.conversationId)
         
@@ -593,8 +595,7 @@ public final class MessageDAO: UserDatabaseDAO {
             .filter(MessageMention.column(of: .messageId) == messageId)
             .deleteAll(database)
         if let category = MessageCategory(rawValue: category), MessageCategory.ftsAvailable.contains(category) {
-            try database.execute(sql: "DELETE FROM \(Message.ftsTableName) WHERE id=?",
-                                 arguments: [messageId])
+            try MessageFTSDAO.shared.deleteMessage(with: messageId)
         }
         
         if status == MessageStatus.FAILED.rawValue {
@@ -628,8 +629,7 @@ public final class MessageDAO: UserDatabaseDAO {
             try MessageMention
                 .filter(MessageMention.column(of: .messageId) == id)
                 .deleteAll(db)
-            try db.execute(sql: "DELETE FROM \(Message.ftsTableName) WHERE id=?",
-                           arguments: [id])
+            try MessageFTSDAO.shared.deleteMessage(with: id)
         }
         return deleteCount > 0
     }
@@ -671,8 +671,10 @@ extension MessageDAO {
             
             // isFTSInitialized is wrote inside a write block, checking it within a write block keeps the value in sync
             if MessageCategory.ftsAvailableCategoryStrings.contains(category), AppGroupUserDefaults.Database.isFTSInitialized, let message = newMessage {
-                try db.execute(sql: "INSERT INTO \(Message.ftsTableName) VALUES (?, ?, ?, ?)",
-                               arguments: [messageId, conversationId, message.content, message.name])
+                MessageFTSDAO.shared.insert(id: message.messageId,
+                                            conversationId: message.conversationId,
+                                            content: message.content,
+                                            name: message.name)
             }
         }
         

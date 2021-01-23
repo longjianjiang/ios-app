@@ -63,6 +63,7 @@ extension AppGroupUserDefaults {
                 || TaskDatabase.current.needsMigration
                 || SignalDatabase.current.needsMigration
                 || UserDatabase.current.needsMigration
+                || FTSDatabase.current.needsMigration
         }
         
         @Default(namespace: .user, key: Key.localVersion, defaultValue: uninitializedVersion)

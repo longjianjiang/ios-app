@@ -7,12 +7,12 @@ class InitializeFTSJob: BaseJob {
         case mismatchedFTSTable
     }
     
-    private static let insertionLimit: Int = 200
+    private static let insertionLimit: Int = 1000
     
     private let insertionSQL = """
-        INSERT INTO \(Message.ftsTableName)(id, conversation_id, content, name)
+        INSERT INTO \(Message.ftsTableName)
         SELECT id, conversation_id, content, name
-        FROM \(Message.databaseTableName)
+        FROM user.\(Message.databaseTableName)
         WHERE category in \(MessageCategory.ftsAvailableCategorySequence) AND status != 'FAILED' AND ROWID > ?
         ORDER BY created_at ASC
         LIMIT \(InitializeFTSJob.insertionLimit)
@@ -31,17 +31,26 @@ class InitializeFTSJob: BaseJob {
         var numberOfMessagesProcessed = 0
         let startDate = Date()
         
+        try FTSDatabase.current.pool.write { (db) -> Void in
+            try db.execute(sql: "ATTACH DATABASE '\(AppGroupContainer.userDatabaseUrl.path)' AS user")
+        }
+        defer {
+            try? FTSDatabase.current.pool.write { (db) -> Void in
+                try db.execute(sql: "DETACH DATABASE 'user'")
+            }
+        }
+        
         while !didInitializedAllMessages && !MixinService.isStopProcessMessages {
             guard !isCancelled else {
                 return
             }
             do {
-                try UserDatabase.current.pool.write { (db) -> Void in
+                try FTSDatabase.current.pool.write { (db) -> Void in
                     let lastInitializedRowID: Int?
                     let lastFTSMessageIDSQL = "SELECT id FROM \(Message.ftsTableName) ORDER BY rowid DESC LIMIT 1"
                     if let lastFTSMessageID = try String.fetchOne(db, sql: lastFTSMessageIDSQL) {
                         lastInitializedRowID = try Int.fetchOne(db,
-                                                                sql: "SELECT rowid FROM messages WHERE id=?",
+                                                                sql: "SELECT rowid FROM user.messages WHERE id=?",
                                                                 arguments: [lastFTSMessageID])
                     } else {
                         lastInitializedRowID = -1
@@ -63,7 +72,6 @@ class InitializeFTSJob: BaseJob {
                 reporter.report(error: error)
                 return
             }
-            usleep(100 * 1000)
         }
         
         let interval = -startDate.timeIntervalSinceNow

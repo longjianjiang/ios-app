@@ -11,7 +11,7 @@ extension ConversationDAO {
                 CASE c.category WHEN 'CONTACT' THEN u.avatar_url ELSE c.icon_url END,
                 CASE c.category WHEN 'CONTACT' THEN u.user_id ELSE NULL END,
                 u.is_verified, u.app_id, count
-            FROM (SELECT conversation_id AS cid, COUNT(id) AS count FROM messages_fts WHERE messages_fts MATCH :keyword GROUP BY conversation_id)
+            FROM (SELECT conversation_id AS cid, COUNT(id) AS count FROM fts.messages_fts WHERE messages_fts MATCH :keyword GROUP BY conversation_id)
                 LEFT JOIN conversations c ON cid = c.conversation_id
                 LEFT JOIN users u ON c.owner_id = u.user_id
             ORDER BY c.pin_time DESC, c.last_message_created_at DESC
@@ -34,9 +34,10 @@ extension ConversationDAO {
     }
     
     func getConversation(from snapshot: DatabaseSnapshot, with keyword: String, limit: Int?) -> [MessagesWithinConversationSearchResult] {
+        let isFTSInitialized = AppGroupUserDefaults.Database.isFTSInitialized
         var sql: String
         let arguments: [String: String]
-        if AppGroupUserDefaults.Database.isFTSInitialized {
+        if isFTSInitialized {
             sql = SQL.fts
             arguments = ["keyword": keyword]
         } else {
@@ -46,6 +47,24 @@ extension ConversationDAO {
         if let limit = limit {
             sql += "\nLIMIT \(limit)"
         }
+        
+        if isFTSInitialized {
+            do {
+                try snapshot.read { (db) -> Void in
+                    try db.execute(sql: "ATTACH DATABASE '\(AppGroupContainer.ftsDatabaseUrl.path)' AS fts")
+                }
+            } catch {
+                return []
+            }
+        }
+        defer {
+            if isFTSInitialized {
+                try? snapshot.read { (db) -> Void in
+                    try db.execute(sql: "DETACH DATABASE 'fts'")
+                }
+            }
+        }
+        
         return snapshot.read { (db) -> [MessagesWithinConversationSearchResult] in
             do {
                 var items = [MessagesWithinConversationSearchResult]()

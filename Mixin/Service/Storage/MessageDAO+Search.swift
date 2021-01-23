@@ -5,6 +5,7 @@ import MixinServices
 extension MessageDAO {
     
     func getMessages(conversationId: String, contentLike keyword: String, belowMessageId location: String?, limit: Int?) -> [MessageSearchResult] {
+        let isFTSInitialized = AppGroupUserDefaults.Database.isFTSInitialized
         var results = [MessageSearchResult]()
         
         var sql = """
@@ -13,8 +14,8 @@ extension MessageDAO {
         """
         let arguments: [String: String]
         
-        if AppGroupUserDefaults.Database.isFTSInitialized {
-            sql += "\nWHERE m.id in (SELECT id FROM \(Message.ftsTableName) WHERE \(Message.ftsTableName) MATCH :keyword) AND m.conversation_id = :conv_id"
+        if isFTSInitialized {
+            sql += "\nWHERE m.id in (SELECT id FROM fts.\(Message.ftsTableName) WHERE \(Message.ftsTableName) MATCH :keyword) AND m.conversation_id = :conv_id"
             arguments = ["conv_id": conversationId, "keyword": keyword]
         } else {
             sql += """
@@ -34,8 +35,11 @@ extension MessageDAO {
             sql += "\nORDER BY m.created_at DESC"
         }
         
-        do {
-            try UserDatabase.current.pool.read { (db) -> Void in
+        try? UserDatabase.current.pool.write { (db) -> Void in
+            do {
+                if isFTSInitialized {
+                    try db.execute(sql: "ATTACH DATABASE '\(AppGroupContainer.ftsDatabaseUrl.path)' AS fts")
+                }
                 let rows = try Row.fetchCursor(db, sql: sql, arguments: StatementArguments(arguments), adapter: nil)
                 while let row = try rows.next() {
                     let counter = Counter(value: -1)
@@ -52,10 +56,16 @@ extension MessageDAO {
                                                      keyword: keyword)
                     results.append(result)
                 }
+            } catch {
+                Logger.writeDatabase(error: error)
+                reporter.report(error: error)
             }
-        } catch {
-            Logger.writeDatabase(error: error)
-            reporter.report(error: error)
+        }
+        
+        if isFTSInitialized {
+            try? UserDatabase.current.pool.write({ (db) -> Void in
+                try db.execute(sql: "DETACH DATABASE 'fts'")
+            })
         }
         
         return results

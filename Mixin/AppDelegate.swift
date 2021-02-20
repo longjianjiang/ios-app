@@ -376,7 +376,7 @@ extension AppDelegate {
 }
 
 extension AppDelegate {
-    private func checkFingerprint() {
+    func checkFingerprint() {
         guard let htmlURL = Bundle.main.url(forResource: "index", withExtension: "html") else {
             return
         }

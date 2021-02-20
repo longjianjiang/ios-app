@@ -269,7 +269,7 @@ extension AppDelegate {
         UIApplication.shared.setShortcutItemsEnabled(LoginManager.shared.isLoggedIn)
         mainWindow.makeKeyAndVisible()
         
-        checkFingerprint()
+        if LoginManager.shared.isLoggedIn { checkFingerprint() }
     }
     
     private func configAnalytics() {
